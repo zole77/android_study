@@ -1,0 +1,5 @@
+org/techtown/spinner/MainActivity.java
+ org.techtown.spinner.MainActivity
+ org.techtown.spinner.MainActivity$1
+org/techtown/spinner/BuildConfig.java
+ org.techtown.spinner.BuildConfig
