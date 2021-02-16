@@ -38,14 +38,13 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
                 .load(arrayList.get(position).getProfile())
                 .into(holder.iv_profile);
         holder.tv_id.setText(arrayList.get(position).getID());
-        holder.tv_pw.setText(arrayList.get(position).getPw());
-        holder.tv_username.setText(arrayList.get(position).getUser_name());
-
+        holder.tv_pw.setText(String.valueOf(arrayList.get(position).getPw()));
+        holder.tv_userName.setText(arrayList.get(position).getUserName());
     }
 
     @Override
     public int getItemCount() {
-        //삼항 연산자
+        //삼항 연산자 arrayList 가 null 이 아니면 size를 null이면 0.
         return (arrayList != null ? arrayList.size():0);
     }
 
@@ -53,15 +52,14 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
         ImageView iv_profile;
         TextView tv_id;
         TextView tv_pw;
-        TextView tv_username;
+        TextView tv_userName;
 
         public CustomViewHolder(@NonNull View itemView) {
             super(itemView);
             this.iv_profile = itemView.findViewById(R.id.iv_profile);
             this.tv_id = itemView.findViewById(R.id.tv_id);
             this.tv_pw = itemView.findViewById(R.id.tv_pw);
-            this.tv_username = itemView.findViewById(R.id.tv_username);
-
+            this.tv_userName = itemView.findViewById(R.id.tv_username);
         }
     }
 }

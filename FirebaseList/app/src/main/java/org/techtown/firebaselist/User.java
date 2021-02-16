@@ -2,9 +2,9 @@ package org.techtown.firebaselist;
 
 public class User {
     private String profile;
-    private String ID;
+    private String id;
     private int pw;
-    private String user_name;
+    private String userName;
 
     public User(){}
 
@@ -13,15 +13,15 @@ public class User {
     }
 
     public String getID() {
-        return ID;
+        return id;
     }
 
     public int getPw() {
         return pw;
     }
 
-    public String getUser_name() {
-        return user_name;
+    public String getUserName() {
+        return userName;
     }
 
     public void setProfile(String profile) {
@@ -29,14 +29,14 @@ public class User {
     }
 
     public void setID(String ID) {
-        this.ID = ID;
+        this.id = id;
     }
 
     public void setPw(int pw) {
         this.pw = pw;
     }
 
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
