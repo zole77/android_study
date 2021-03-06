@@ -1,0 +1,10 @@
+1. java-json.jar 파일을 다운받고 프로젝트 라이브러리 경로에 넣는다.
+2. 다음 3가지를 import 한다.
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.XML;
+
+3. JSONObject를 선언하고, XML.toJSONObject 함수에 xml 파일을 스트링 형태로 넣는다. 이렇게하면 변환이 끝난다.
+JSONObject jsonObject = null;
+jsonObject = XML.toJSONObject(xml);
+textView.setText(jsonObject.toString(3));
