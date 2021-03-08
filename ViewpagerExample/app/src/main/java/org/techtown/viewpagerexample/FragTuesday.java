@@ -20,7 +20,7 @@ public class FragTuesday extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.frag_monday, container, false);
+        view = inflater.inflate(R.layout.frag_tuesday, container, false);
         return view;
     }
 

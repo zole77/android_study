@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 뷰페이저 세팅
         ViewPager viewPager = findViewById(R.id.viewPager);
-        fragmentPagerAdapter = new ViewAdapter(getSupportFragmentManager()); // 어댑터 생성
+        fragmentPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager()); // 어댑터 생성
 
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         viewPager.setAdapter(fragmentPagerAdapter);
