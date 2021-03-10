@@ -1,0 +1,24 @@
+ViewPager2에서는 리사이클러뷰를 사용한다.
+FragmentStateAdapter를 이용하여 프래그먼트를 짠다
+
+
+XML 레이아웃 파일 업데이트
+- <!-- A ViewPager element -->
+    <android.support.v4.view.ViewPager
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- A ViewPager2 element -->
+    <androidx.viewpager2.widget.ViewPager2
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+슈퍼클래스는 뷰를 통해 페이징하는 경우 RecyclerView.Adapter로, 프래그먼트를 통해 페이징하는 경우 FragmentStateAdapter로 변경한다.
+프래그먼트 기반 어댑터 클래스에서는 생성자 매개변수를 변경한다.
+getCount()가 아닌 getItemCount()를 재정의한다.
+프래그먼트 기반 어댑터 클래스에서는 getItem()가 아닌 createFragment()를 재정의한다.
