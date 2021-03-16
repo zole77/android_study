@@ -68,7 +68,8 @@ public class MainActivity extends AppCompatActivity
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};  // 외부 저장소
 
 
-    Location mCurrentLocatiion;
+    Location mCurrentLocation;
+
     LatLng currentPosition;
 
 
@@ -111,6 +112,7 @@ public class MainActivity extends AppCompatActivity
         mapFragment.getMapAsync(this);
     }
 
+    // 지도 동기화 및 준비
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         Log.d(TAG, "onMapReady :");
@@ -173,11 +175,7 @@ public class MainActivity extends AppCompatActivity
 
 
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        // 현재 오동작을 해서 주석처리
-
-        //mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-
             @Override
             public void onMapClick(LatLng latLng) {
 
@@ -186,6 +184,8 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+
+    // 위치를 호출
     LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
@@ -200,49 +200,61 @@ public class MainActivity extends AppCompatActivity
                 currentPosition
                         = new LatLng(location.getLatitude(), location.getLongitude());
 
-
                 String markerTitle = getCurrentAddress(currentPosition);
                 String markerSnippet = "위도:" + String.valueOf(location.getLatitude())
                         + " 경도:" + String.valueOf(location.getLongitude());
 
                 Log.d(TAG, "onLocationResult : " + markerSnippet);
 
-
                 //현재 위치에 마커 생성하고 이동
                 setCurrentLocation(location, markerTitle, markerSnippet);
 
-                mCurrentLocatiion = location;
+
+                // 위치 정보 거리 비교하는 부분 ***
+                mCurrentLocation = location;
+                Location tmp_location = new Location("");
+                tmp_location.setLatitude(35.06489);
+                tmp_location.setLongitude(128.98302);
+                MarkerOptions marker = new MarkerOptions();
+                float distance = mCurrentLocation.distanceTo(tmp_location); // 미터 단위
+                if(distance < 50){
+                    addMarker(tmp_location, marker, distance);
+                }
+                Log.d(TAG, "####: 우리집과 롯데캐슬 블루: " + distance);
             }
-
-
         }
-
     };
 
+    private void addMarker(Location location, MarkerOptions marker, float distance){
+        marker.position(new LatLng(location.getLatitude(), location.getLongitude()));
+        marker.visible(true);
+        marker.title("나와의 거리: " + distance);
+        marker.snippet("");
+        mMap.addMarker(marker);
+    }
+    // 위치 정보 거리 비교하는 부분 ***
 
-
+    // 위치 업데이트 시작
     private void startLocationUpdates() {
-
         if (!checkLocationServicesStatus()) {
-
+            // 위치서비스 상태 체크
             Log.d(TAG, "startLocationUpdates : call showDialogForLocationServiceSetting");
             showDialogForLocationServiceSetting();
         }else {
-
+            // 자체적으로 권한을 체크함
             int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION);
             int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_COARSE_LOCATION);
 
 
-
+            // 만약에 권한이 허락이 안되있으면
             if (hasFineLocationPermission != PackageManager.PERMISSION_GRANTED ||
                     hasCoarseLocationPermission != PackageManager.PERMISSION_GRANTED   ) {
 
                 Log.d(TAG, "startLocationUpdates : 퍼미션 안가지고 있음");
                 return;
             }
-
 
             Log.d(TAG, "startLocationUpdates : call mFusedLocationClient.requestLocationUpdates");
 
@@ -254,6 +266,9 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+
+
+
 
 
     @Override
@@ -271,8 +286,6 @@ public class MainActivity extends AppCompatActivity
                 mMap.setMyLocationEnabled(true);
 
         }
-
-
     }
 
 
@@ -339,7 +352,7 @@ public class MainActivity extends AppCompatActivity
 
 
         if (currentMarker != null) currentMarker.remove();
-
+        // 마커가 있으면 마커를 지우고
 
         LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
