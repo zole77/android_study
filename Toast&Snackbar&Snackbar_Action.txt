@@ -1,0 +1,13 @@
+Toast
+- Toast를 화면에 보여주려면 Context가 필요하고, 사용자에게 메세지를 보여주는 역할만 할 수 있다.
+- 지정가능한 시간은 LENGTH_SHORT, LENGTH_LONG
+
+
+Snackbar
+- Snackbar도 Toast처럼 일정시간 화면에 보여주는 용도로 사용이 가능하다. 사용하려면 View가 필요하다.
+- 지정가능한 시간은 LENGTH_SHORT, LENGTH_LONG, LENGTH_INDEFINITE
+- INDEFINITE는 사용자의 입력이 있을 때까지 계속 화면에 메세지를 보여주는 용도이다.
+
+Snackbar Action
+- 자동으로 사라지지 않는다.
+- 사용자가 입력을 줘야만 사라진다. ex) 확인 버튼
