@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
         implements OnMapReadyCallback,
         ActivityCompat.OnRequestPermissionsResultCallback{
 
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "googlemap_example";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
-    private static final int UPDATE_INTERVAL_MS = 1000;  // 1초
+    private static final int UPDATE_INTERVAL_MS = 5000;  // 600000 = 300초
     private static final int FASTEST_UPDATE_INTERVAL_MS = 500; // 0.5초
 
 
@@ -69,6 +69,9 @@ public class MainActivity extends AppCompatActivity
 
 
     Location mCurrentLocation;
+    Location tmp_location = new Location("");
+    int markcount = 0;
+    Location a = new Location("");
 
     LatLng currentPosition;
 
@@ -94,9 +97,7 @@ public class MainActivity extends AppCompatActivity
 
         locationRequest = new LocationRequest()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(UPDATE_INTERVAL_MS)
-                .setFastestInterval(FASTEST_UPDATE_INTERVAL_MS);
-
+                .setInterval(UPDATE_INTERVAL_MS);
 
         LocationSettingsRequest.Builder builder =
                 new LocationSettingsRequest.Builder();
@@ -212,25 +213,60 @@ public class MainActivity extends AppCompatActivity
 
                 // 위치 정보 거리 비교하는 부분 ***
                 mCurrentLocation = location;
-                Location tmp_location = new Location("");
-                tmp_location.setLatitude(35.06489);
-                tmp_location.setLongitude(128.98302);
-                MarkerOptions marker = new MarkerOptions();
-                float distance = mCurrentLocation.distanceTo(tmp_location); // 미터 단위
-                if(distance < 50){
-                    addMarker(tmp_location, marker, distance);
+
+
+                if(tmp_location.getLatitude() < 1 ){
+                    tmp_location = mCurrentLocation;
+                    MarkerOptions marker = new MarkerOptions();
+                    marker.position(new LatLng(tmp_location.getLatitude(), tmp_location.getLongitude()));
+                    marker.visible(true);
+                    mMap.addMarker(marker);
+                    Log.d(TAG, "####: tmp 위도: " + String.valueOf(tmp_location.getLatitude()) +
+                            "경도: " + String.valueOf(tmp_location.getLongitude()));
+                }else{
+                    compareLocation(tmp_location, mCurrentLocation);
+                    tmp_location = mCurrentLocation;
                 }
-                Log.d(TAG, "####: 우리집과 롯데캐슬 블루: " + distance);
             }
         }
     };
 
-    private void addMarker(Location location, MarkerOptions marker, float distance){
+    private void compareLocation(Location tmp_location, Location mCurrentLocation){
+        MarkerOptions marker = new MarkerOptions();
+        float distance = mCurrentLocation.distanceTo(tmp_location);
+        Log.d(TAG, "tmp 와 Current 사이 거리: " + distance);
+
+        if(distance < 30){
+            if(markcount == 0){
+                Log.d(TAG, "마커 생성함");
+                Marker marker1 = addMarker(mCurrentLocation, marker, distance);
+                // 첫번째 마커 위치 저장
+                a = mCurrentLocation;
+                markcount++;
+            }else{
+                Log.d(TAG, "진입");
+                // 두번째 마커부터 비교
+                if(a.distanceTo(mCurrentLocation) < 30){ // 만약 첫번째 마커와 위치 차이가 5미터 이내면 (없으면),
+//                    marker1.remove();                   // 찍었던 마커를 삭제함
+                    Log.d(TAG, "찍지않음");
+                }else{
+                    Log.d(TAG, "마크 카운트 0으로 초기화함");
+                    markcount = 0;
+                }
+            }
+
+        }
+    }
+
+    private Marker addMarker(Location location, MarkerOptions marker, float distance){
+        Marker marker1;
         marker.position(new LatLng(location.getLatitude(), location.getLongitude()));
         marker.visible(true);
-        marker.title("나와의 거리: " + distance);
+        marker.title("");
         marker.snippet("");
-        mMap.addMarker(marker);
+        marker1 = mMap.addMarker(marker);
+
+        return marker1;
     }
     // 위치 정보 거리 비교하는 부분 ***
 
