@@ -55,7 +55,7 @@ public class MainActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
 
     private static final String TAG = "googlemap_example";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
-    private static final int UPDATE_INTERVAL_MS = 5000;  // 600000 = 300초
+    private static final int UPDATE_INTERVAL_MS = 1000;  // 600000 = 300초
     private static final int FASTEST_UPDATE_INTERVAL_MS = 500; // 0.5초
 
 
@@ -216,6 +216,7 @@ public class MainActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
 
 
                 if(tmp_location.getLatitude() < 1 ){
+                    // 첫 위치 저장
                     tmp_location = mCurrentLocation;
                     MarkerOptions marker = new MarkerOptions();
                     marker.position(new LatLng(tmp_location.getLatitude(), tmp_location.getLongitude()));
@@ -238,9 +239,16 @@ public class MainActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
 
         if(distance < 30){
             if(markcount == 0){
+                LatLng Current = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+                String markerTitle = getCurrentAddress(Current);
+                String markerSnippet = "위도:" + String.valueOf(mCurrentLocation.getLatitude())
+                        + " 경도:" + String.valueOf(mCurrentLocation.getLongitude());
+                //현재 위치에 마커 생성하고 이동
+                addMarker(mCurrentLocation, markerTitle, markerSnippet);
+
                 Log.d(TAG, "마커 생성함");
-                Marker marker1 = addMarker(mCurrentLocation, marker, distance);
-                // 첫번째 마커 위치 저장
+                //Marker marker1 = addMarker(mCurrentLocation, marker, distance);
+                //첫번째 마커 위치 저장
                 a = mCurrentLocation;
                 markcount++;
             }else{
@@ -248,6 +256,7 @@ public class MainActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
                 // 두번째 마커부터 비교
                 if(a.distanceTo(mCurrentLocation) < 30){ // 만약 첫번째 마커와 위치 차이가 5미터 이내면 (없으면),
 //                    marker1.remove();                   // 찍었던 마커를 삭제함
+                    a = mCurrentLocation;               // 현재 위치를 이전 위치로 업데이트
                     Log.d(TAG, "찍지않음");
                 }else{
                     Log.d(TAG, "마크 카운트 0으로 초기화함");
@@ -258,12 +267,13 @@ public class MainActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
         }
     }
 
-    private Marker addMarker(Location location, MarkerOptions marker, float distance){
+    private Marker addMarker(Location location, String markerTitle, String markerSnippet){
         Marker marker1;
+        MarkerOptions marker = new MarkerOptions();
         marker.position(new LatLng(location.getLatitude(), location.getLongitude()));
-        marker.visible(true);
-        marker.title("");
-        marker.snippet("");
+        marker.title(markerTitle);
+        marker.snippet(markerSnippet);
+        marker.draggable(true);
         marker1 = mMap.addMarker(marker);
 
         return marker1;
