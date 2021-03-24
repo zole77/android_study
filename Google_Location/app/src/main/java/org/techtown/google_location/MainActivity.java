@@ -7,6 +7,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,6 +16,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
@@ -111,6 +114,16 @@ public class MainActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        Intent intent = new Intent(this, MyService.class);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            startForegroundService(intent);
+        }
+        else{
+            startService(intent);
+        }
+
     }
 
     // 지도 동기화 및 준비
@@ -232,6 +245,7 @@ public class MainActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
         }
     };
 
+
     private void compareLocation(Location tmp_location, Location mCurrentLocation){
         MarkerOptions marker = new MarkerOptions();
         float distance = mCurrentLocation.distanceTo(tmp_location);
@@ -263,7 +277,6 @@ public class MainActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
                     markcount = 0;
                 }
             }
-
         }
     }
 
@@ -293,7 +306,6 @@ public class MainActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
             int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_COARSE_LOCATION);
 
-
             // 만약에 권한이 허락이 안되있으면
             if (hasFineLocationPermission != PackageManager.PERMISSION_GRANTED ||
                     hasCoarseLocationPermission != PackageManager.PERMISSION_GRANTED   ) {
@@ -308,9 +320,7 @@ public class MainActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
 
             if (checkPermission())
                 mMap.setMyLocationEnabled(true);
-
         }
-
     }
 
 
