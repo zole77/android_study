@@ -16,36 +16,106 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
 public class MyService extends Service
 {
+    String TAG = "Service";
+    Location tmp_location = new Location("");
+    Location mCurrentLocation = new Location("");
+    private Location location;
+    int markcount = 0;
+    Location a = new Location("");
 
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(@NonNull LocationResult locationResult) {
             super.onLocationResult(locationResult);
-            if (locationResult != null && locationResult.getLastLocation() != null) {
-                // 현재 위치
-                double latitude = locationResult.getLastLocation().getLatitude();
-                double longtitude = locationResult.getLastLocation().getLongitude();
-                Log.d("LOCATION_UPDATE", latitude + ", " + longtitude);
+
+            List<Location> locationList = locationResult.getLocations();
+
+            if (locationList.size() > 0) {
+                location = locationList.get(locationList.size() - 1);
+                mCurrentLocation = location;
+                Log.d(TAG, "####: 현재위치 위도: " + String.valueOf(mCurrentLocation.getLatitude()) +
+                        "경도: " + String.valueOf(mCurrentLocation.getLongitude()));
+
+                if (tmp_location.getLatitude() < 1) {
+                    // 첫 위치 저장
+                    tmp_location = mCurrentLocation;
+                    MarkerOptions marker = new MarkerOptions();
+                    marker.position(new LatLng(tmp_location.getLatitude(), tmp_location.getLongitude()));
+                    marker.visible(true);
+                    Log.d(TAG, "####: tmp 위도: " + String.valueOf(tmp_location.getLatitude()) +
+                            "경도: " + String.valueOf(tmp_location.getLongitude()));
+                } else {
+                    compareLocation(tmp_location, mCurrentLocation);
+                    tmp_location = mCurrentLocation;
+                }
             }
         }
     };
+
+    private void compareLocation(Location tmp_location, Location mCurrentLocation){
+        MarkerOptions marker = new MarkerOptions();
+        float distance = mCurrentLocation.distanceTo(tmp_location);
+        Log.d(TAG,"tmp 와 Current 사이 거리: " + distance);
+
+        if(distance < 30){
+            if(markcount == 0){
+                LatLng Current = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+                Log.d(TAG, "위치 저장함");
+                //Marker marker1 = addMarker(mCurrentLocation, marker, distance);
+                //첫번째 마커 위치 저장
+                a = mCurrentLocation;
+                markcount++;
+            }else{
+                Log.d(TAG, "진입");
+                // 두번째 마커부터 비교
+                if(a.distanceTo(mCurrentLocation) < 30){ // 만약 첫번째 마커와 위치 차이가 5미터 이내면 (없으면),
+//                    marker1.remove();                   // 찍었던 마커를 삭제함
+                    a = mCurrentLocation;               // 현재 위치를 이전 위치로 업데이트
+                    Log.d(TAG, "저장하지않음");
+                }else{
+                    Log.d(TAG, "마크 카운트 0으로 초기화함");
+                    markcount = 0;
+                }
+            }
+        }
+    }
+
+//    private Marker addMarker(Location location, String markerTitle, String markerSnippet){
+//        Marker marker1;
+//        MarkerOptions marker = new MarkerOptions();
+//        marker.position(new LatLng(location.getLatitude(), location.getLongitude()));
+//        marker.title(markerTitle);
+//        marker.snippet(markerSnippet);
+//        marker.draggable(true);
+//        marker1 = mMap.addMarker(marker);
+//
+//        return marker1;
+//    }
 
     public MyService() {
     }
@@ -143,11 +213,8 @@ public class MyService extends Service
 //
 //
 //        startForeground(1,notification);
-
         return super.onStartCommand(intent, flags, startId);
     }
-
-
 
     private void createNotificationChannel() {
         // os 가 oreo 보다 높은지 체크함
@@ -165,4 +232,5 @@ public class MyService extends Service
         stopSelf();
         super.onDestroy();
     }
+
 }
