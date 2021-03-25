@@ -7,8 +7,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -52,6 +54,13 @@ public class MainActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
         implements OnMapReadyCallback,
         ActivityCompat.OnRequestPermissionsResultCallback{
 
+    /*
+    새롭게 추가한 부분
+     */
+    ////////////////////////////////////////////////////////////////
+    private static final int REQUEST_CODE_LOCATION_PERMISSIONS = 1;
+
+    ////////////////////////////////////////////////////////////////
 
     private GoogleMap mMap;
     private Marker currentMarker = null;
@@ -124,7 +133,52 @@ public class MainActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
             startService(intent);
         }
 
+        if(ContextCompat.checkSelfPermission(
+                getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(
+                    MainActivity.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE_LOCATION_PERMISSIONS
+            );
+        }else{
+            startLocationService();
+        }
     }
+
+
+    private boolean isLocationServiceRunning(){
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        if(activityManager != null){
+            for(ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)){
+                if(MyService.class.getName().equals(service.service.getClassName())){
+                    if(service.foreground){
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        return false;
+    }
+
+    private void startLocationService(){
+        if(!isLocationServiceRunning()){
+            Intent intent = new Intent(getApplicationContext(), MyService.class);
+            intent.setAction(Constants.ACTION_START_LOCATION_SERVICE);
+            startService(intent);
+            Toast.makeText(this,"Location service started", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void stopLocationService(){
+        if(isLocationServiceRunning()){
+            Intent intent = new Intent(getApplicationContext(), MyService.class);
+            intent.setAction(Constants.ACTION_STOP_LOCATION_SERVICE);
+            stopService(intent);
+            Toast.makeText(this, "Location service stopped", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
 
     // 지도 동기화 및 준비
     @Override
