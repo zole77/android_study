@@ -77,9 +77,11 @@ public class ListDataActivity extends AppCompatActivity {
                     final EditText et = new EditText(ListDataActivity.this);
                     ad.setView(et);
 
+                    int finalItemID = itemID;
                     ad.setPositiveButton("예", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            mDatabaseHelper.deleteName(finalItemID);
                             dialog.dismiss();
                         }
                     });
