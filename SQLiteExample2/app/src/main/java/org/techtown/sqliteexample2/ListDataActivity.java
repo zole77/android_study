@@ -33,7 +33,8 @@ public class ListDataActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
 
-    int idnum;
+    String message;
+
     String sData;
     DatabaseHelper mDatabaseHelper;
 
@@ -46,100 +47,77 @@ public class ListDataActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         Data = new ArrayList<>();
+        mDatabaseHelper = new DatabaseHelper(this);
+
 
         dataAdapter = new DataAdapter(Data);
         recyclerView.setAdapter(dataAdapter);
 
-        populateListView();
-    }
+        dataAdapter.Clearmlist();
 
-//    public void mOnClick(View v) {
-//
-//        maskadapter.ClearMaskList();
-//
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                getXmlMask();
-//
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//
-//                        maskadapter.notifyDataSetChanged();
-//                    }
-//                });
-//            }
-//        }).start();
-//    }
+        dataAdapter.setOnItemClickListener(new DataAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                ////////////// 리사이클러뷰를 통해 삭제하는 기능 추가중...
+                Log.d(TAG, "onItemClick: You Clicked on " + name);
+                //////////////
+                AlertDialog.Builder ad = new AlertDialog.Builder(ListDataActivity.this);
+                ad.setIcon(R.mipmap.ic_launcher_round);
+                ad.setTitle("제목");
+                ad.setMessage("삭제하시겠습니까?");
+
+                final EditText et = new EditText(ListDataActivity.this);
+                ad.setView(et);
+
+                ad.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mDatabaseHelper.deleteName(position);
+                        dialog.dismiss();
+                        dataAdapter.notifyDataSetChanged();
+                    }
+                });
+
+                ad.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                ad.show();
+            }
+        });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                populateListView();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        }).start();
+
+    }
 
     private void populateListView() {
         Log.d(TAG, "populateListView: Displaying data in the View");
 
         Cursor data = mDatabaseHelper.getData();
-        Data = new ArrayList<>();
         while (data.moveToNext()) {
-            idnum = data.getInt(0);
             sData = data.getString(1);
-            Data data1 = new Data(idnum, sData);
+            Data data1 = new Data(sData);
             Data.add(data1);
         }
+    }
 
-//        recyclerView.setOnClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//
-//            }
-//        });
-        //set an onItemClickListener to the ListView
-//        recyclerView.setOnClickListener( {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                String name = adapterView.getItemAtPosition(i).toString();
-//                Log.d(TAG, "onItemClick: You Clicked on " + name);
-//
-//                Cursor data = mDatabaseHelper.getItemID(name); //get the id associated with that name
-//                int itemID = -1;
-//                while(data.moveToNext()){
-//                    itemID = data.getInt(0);
-//                }
-//                if(itemID > -1){
-//                    Log.d(TAG, "onItemClick: The ID is: " + itemID);
-//                    AlertDialog.Builder ad = new AlertDialog.Builder(ListDataActivity.this);
-//                    ad.setIcon(R.mipmap.ic_launcher_round);
-//                    ad.setTitle("제목");
-//                    ad.setMessage("삭제하시겠습니까?");
-//
-//                    final EditText et = new EditText(ListDataActivity.this);
-//                    ad.setView(et);
-//
-//                    int finalItemID = itemID;
-//                    ad.setPositiveButton("예", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            mDatabaseHelper.deleteName(finalItemID);
-//                            dialog.dismiss();
-//                        }
-//                    });
-//
-//                    ad.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            dialog.dismiss();
-//                        }
-//                    });
-//
-//                    ad.show();
-//                }
-//                else{
-//                    toastMessage("No ID associated with that name");
-//                }
-//            }
-//        });
-//    }
-
-//    private void toastMessage(String message){
-//        Toast.makeText(this,message, Toast.LENGTH_SHORT).show();
-//    }
+    private void toastMessage (String message){
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
