@@ -1,17 +1,11 @@
 package org.techtown.sqliteexample2;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ListDataActivity extends AppCompatActivity {
 
@@ -57,9 +50,10 @@ public class ListDataActivity extends AppCompatActivity {
 
         dataAdapter.setOnItemClickListener(new DataAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View v, int position) {
+            public void onItemClick(View v, int position, TextView sData) {
+                String row_data = sData.getText().toString();
                 ////////////// 리사이클러뷰를 통해 삭제하는 기능 추가중...
-                Log.d(TAG, "onItemClick: You Clicked on " + name);
+                Log.d(TAG, "onItemClick: You Clicked on " + sData.getText());
                 //////////////
                 AlertDialog.Builder ad = new AlertDialog.Builder(ListDataActivity.this);
                 ad.setIcon(R.mipmap.ic_launcher_round);
@@ -72,7 +66,7 @@ public class ListDataActivity extends AppCompatActivity {
                 ad.setPositiveButton("예", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mDatabaseHelper.deleteName(position);
+                        mDatabaseHelper.deleteName(row_data);
                         dialog.dismiss();
                         dataAdapter.notifyDataSetChanged();
                     }

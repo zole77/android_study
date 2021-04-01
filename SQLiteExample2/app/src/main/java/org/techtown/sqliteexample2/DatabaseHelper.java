@@ -98,13 +98,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     -->
     DELETE FROM TABLE_NAME
-    WHERE ID = "id"
+    WHERE name = row_data
      */
-    public void deleteName(int id){
+    public void deleteName(String row_data){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE FROM " + TABLE_NAME + " WHERE "
-                + COL1 + " = " + id;
-                //+ " AND " + COL2 + " = '" + name + "'";
+                + COL2 + " = " + row_data;
         Log.d(TAG, "deleteName: query: " + query);
         db.execSQL(query);
     }
