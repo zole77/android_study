@@ -38,7 +38,18 @@ public class ListDataActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data);
 
+        /////////////////// 새로고침하는 부분 ///////////////////
         refreshLayout = findViewById(R.id.refresh_layout);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                dataAdapter.Clearmlist();
+                populateListView();
+                dataAdapter.notifyDataSetChanged();
+                refreshLayout.setRefreshing(false);
+            }
+        });
+        //////////////////////////////////////////////////////
         recyclerView = (RecyclerView) findViewById(R.id.rv);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -50,15 +61,13 @@ public class ListDataActivity extends AppCompatActivity {
         dataAdapter = new DataAdapter(Data);
         recyclerView.setAdapter(dataAdapter);
 
-        dataAdapter.Clearmlist();
-
         dataAdapter.setOnItemClickListener(new DataAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position, TextView sData) {
                 String row_data = sData.getText().toString();
-                ////////////// 리사이클러뷰를 통해 삭제하는 기능 추가중...
+                ////////////// 삭제 기능 ///////////////////
+                Log.d(TAG, "현재시각: " + mDatabaseHelper.getDate());
                 Log.d(TAG, "onItemClick: You Clicked on " + sData.getText());
-                //////////////
                 AlertDialog.Builder ad = new AlertDialog.Builder(ListDataActivity.this);
                 ad.setIcon(R.mipmap.ic_launcher_round);
                 ad.setTitle("제목");
@@ -73,6 +82,8 @@ public class ListDataActivity extends AppCompatActivity {
                         mDatabaseHelper.deleteName(row_data);
                         dialog.dismiss();
                         dataAdapter.notifyDataSetChanged();
+                        dataAdapter.Clearmlist();
+                        populateListView();
                     }
                 });
 
@@ -84,33 +95,14 @@ public class ListDataActivity extends AppCompatActivity {
                 });
 
                 ad.show();
+                ///////////////////////////////////////////////////////
             }
         });
 
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refreshLayout.setRefreshing(false);
-            }
-        });
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                populateListView();
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        dataAdapter.notifyDataSetChanged();
-                    }
-                });
-            }
-        }).start();
-
+        populateListView();
     }
 
+    // db 가져오는 부분
     private void populateListView() {
         Log.d(TAG, "populateListView: Displaying data in the View");
 
