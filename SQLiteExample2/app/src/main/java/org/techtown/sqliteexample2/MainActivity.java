@@ -50,13 +50,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void AddData(String newEntry){
-        boolean insertData = mDatabaseHelper.addData(newEntry);
+        mDatabaseHelper.addData(newEntry);
 
-        if(insertData){
-            toast("데이터가 성공적으로 등록되었습니다.");
-        }else{
-            toast("이미 존재하는 데이터입니다.");
-        }
+//        if(insertData){
+//            toast("데이터가 성공적으로 등록되었습니다.");
+//        }else{
+//            toast("이미 존재하는 데이터입니다.");
+//        }
     }
 
     private void toast(String message){
