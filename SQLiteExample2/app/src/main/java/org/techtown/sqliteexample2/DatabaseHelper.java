@@ -34,16 +34,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*
-    CREATE TABLE TABLE_NAME(id INT NOT NULL AUTO_INCREMENT, name VARCHAR(100) NOT NULL, PRIMARY KEY(id));
-    ->
-
     CREATE TABLE TABLE_NAME(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     latitude decimal(18,10) NOT NULL,
     longitude decimal(18,10) NOT NULL,
     PRIMARY KEY(id));
-
-     */
+    */
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d(TAG, "데이터베이스"+TABLE_NAME+"생성됨");
