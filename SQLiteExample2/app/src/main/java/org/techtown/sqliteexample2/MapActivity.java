@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -56,6 +57,12 @@ public class MapActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
     ////////////////////////////////////////////////////////////////
     private static final int REQUEST_CODE_LOCATION_PERMISSIONS = 1;
     ////////////////////////////////////////////////////////////////
+
+    Intent intent = getIntent();
+    String date = intent.getStringExtra("table_name");
+
+    DatabaseHelper mDatabaseHelper = new DatabaseHelper(this);
+
 
     private GoogleMap mMap;
     private Marker currentMarker = null;

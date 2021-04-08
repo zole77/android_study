@@ -1,5 +1,7 @@
 package org.techtown.sqliteexample2;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public class Data {
 
     private String name;

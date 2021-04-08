@@ -1,6 +1,7 @@
 package org.techtown.sqliteexample2;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -64,6 +65,16 @@ public class ListDataActivity extends AppCompatActivity {
         dataAdapter.setOnItemClickListener(new DataAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position, TextView sData) {
+                String date = sData.toString();
+                Intent intent = new Intent(ListDataActivity.this, MapActivity.class);
+                intent.putExtra("table_name",date);
+                startActivity(intent);
+            }
+        });
+
+        dataAdapter.setOnItemLongClickListener(new DataAdapter.OnItemLongClickListener() {
+            @Override
+            public void onItemLongClick(View v, int pos, TextView sData) {
                 String row_data = sData.getText().toString();
                 ////////////// 삭제 기능 ///////////////////
                 Log.d(TAG, "현재시각: " + mDatabaseHelper.getDate());
@@ -96,13 +107,6 @@ public class ListDataActivity extends AppCompatActivity {
 
                 ad.show();
                 ///////////////////////////////////////////////////////
-            }
-        });
-
-        dataAdapter.setOnItemLongClickListener(new DataAdapter.OnItemLongClickListener() {
-            @Override
-            public void onItemLongClick(View v, int pos, TextView sData) {
-                toastMessage("롱클릭");
             }
         });
 

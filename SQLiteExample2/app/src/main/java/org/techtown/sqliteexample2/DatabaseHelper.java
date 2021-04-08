@@ -40,6 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     longitude decimal(18,10) NOT NULL,
     PRIMARY KEY(id));
     */
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d(TAG, "데이터베이스"+TABLE_NAME+"생성됨");
@@ -56,7 +57,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /*
     INSERT INTO TABLE_NAME (name) VALUES(item);
-     */
+    */
     public void addData(LatLng Current){
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("INSERT INTO '" + TABLE_NAME + "'(latitude, longitude) VALUES ("+Current.latitude+","+Current.longitude+")");
@@ -125,7 +126,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public void deleteName(String row_data){
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM'" + TABLE_NAME + "'WHERE name = '" + row_data +"';";
+        String query = "DELETE FROM '" + TABLE_NAME + "' WHERE name = '" + row_data +"';";
         Log.d(TAG, "deleteName: query: " + query);
         db.execSQL(query);
     }
