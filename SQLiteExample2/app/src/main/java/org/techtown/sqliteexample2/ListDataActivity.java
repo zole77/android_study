@@ -65,7 +65,8 @@ public class ListDataActivity extends AppCompatActivity {
         dataAdapter.setOnItemClickListener(new DataAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position, TextView sData) {
-                String date = sData.toString();
+                Log.d(TAG, "클릭됨: " + sData.getText().toString());
+                String date = sData.getText().toString();
                 Intent intent = new Intent(ListDataActivity.this, MapActivity.class);
                 intent.putExtra("table_name",date);
                 startActivity(intent);
@@ -113,13 +114,19 @@ public class ListDataActivity extends AppCompatActivity {
         populateListView();
     }
 
+
     // db 가져오는 부분
     private void populateListView() {
         Log.d(TAG, "populateListView: Displaying data in the View");
 
-        Cursor data = mDatabaseHelper.getData();
+        Cursor data = mDatabaseHelper.getTableName();
         while (data.moveToNext()) {
-            sData = data.getString(1);
+            sData = data.getString(0);
+            if(sData.equals("android_metadata")){
+                continue;
+            }else if(sData.equals("sqlite_sequence")){
+                continue;
+            }
             Data data1 = new Data(sData);
             Data.add(data1);
         }

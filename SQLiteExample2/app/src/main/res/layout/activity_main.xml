@@ -42,13 +42,6 @@
             android:text="데이터 조회하기"
             android:layout_toRightOf="@+id/btnAdd"/>
 
-        <Button
-            android:layout_marginTop="100dp"
-            android:layout_marginLeft="100dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btnMap"
-            android:text="지도보기" />
     </RelativeLayout>
 
 </RelativeLayout>

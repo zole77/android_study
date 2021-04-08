@@ -14,12 +14,14 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -43,6 +45,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -58,11 +61,12 @@ public class MapActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
     private static final int REQUEST_CODE_LOCATION_PERMISSIONS = 1;
     ////////////////////////////////////////////////////////////////
 
-    Intent intent = getIntent();
-    String date = intent.getStringExtra("table_name");
-
+    private ArrayList<Data> Data;
     DatabaseHelper mDatabaseHelper = new DatabaseHelper(this);
-
+    double latitude;
+    double longitude;
+    LatLng latLng;
+    String date;
 
     private GoogleMap mMap;
     private Marker currentMarker = null;
@@ -121,10 +125,14 @@ public class MapActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
+        Intent intent = getIntent();
+        date = intent.getStringExtra("table_name");
+        Data = new ArrayList<>();
     }
 
     // 지도 동기화 및 준비
@@ -187,8 +195,6 @@ public class MapActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
 
         }
 
-
-
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -197,6 +203,7 @@ public class MapActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
                 Log.d( TAG, "onMapClick :");
             }
         });
+        getLatLng();
     }
 
 
@@ -259,7 +266,7 @@ public class MapActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
                 String markerSnippet = "위도:" + String.valueOf(mCurrentLocation.getLatitude())
                         + " 경도:" + String.valueOf(mCurrentLocation.getLongitude());
                 //현재 위치에 마커 생성하고 이동
-                addMarker(mCurrentLocation, markerTitle, markerSnippet);
+                //addMarker(mCurrentLocation, markerTitle, markerSnippet);
 
                 Log.d(TAG, "마커 생성함");
                 //Marker marker1 = addMarker(mCurrentLocation, marker, distance);
@@ -281,16 +288,33 @@ public class MapActivity<tmp_locaiton, tmp_location> extends AppCompatActivity
         }
     }
 
-    private Marker addMarker(Location location, String markerTitle, String markerSnippet){
-        Marker marker1;
-        MarkerOptions marker = new MarkerOptions();
-        marker.position(new LatLng(location.getLatitude(), location.getLongitude()));
-        marker.title(markerTitle);
-        marker.snippet(markerSnippet);
-        marker.draggable(true);
-        marker1 = mMap.addMarker(marker);
 
-        return marker1;
+    private void getLatLng() {
+        Log.d(TAG, "populateListView: Displaying data in the View");
+        Location db_location = new Location(LocationManager.GPS_PROVIDER);
+        Cursor data = mDatabaseHelper.getLocation(date);
+        while (data.moveToNext()) {
+            latitude = data.getDouble(1);
+            longitude = data.getDouble(2);
+            latLng = new LatLng(latitude, longitude);
+            db_location.setLatitude(latitude);
+            db_location.setLongitude(longitude);
+            Log.d(TAG, "DB에서 가져온 위도: " + latitude + " DB에서 가져온 경도: " + longitude);
+            String markerTitle = getCurrentAddress(latLng);
+            String markerSnippet = "위도:" + String.valueOf(db_location.getLatitude())
+                    + " 경도:" + String.valueOf(db_location.getLongitude());
+            addMarkers(latLng, db_location, markerTitle, markerSnippet);
+        }
+    }
+
+    private void addMarkers(LatLng latLng, Location location, String markerTitle, String markerSnippet){
+        Marker Marker1 = null;
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        markerOptions.title(markerTitle);
+        markerOptions.snippet(markerSnippet);
+        markerOptions.draggable(true);
+        Marker1 = mMap.addMarker(markerOptions);
     }
     // 위치 정보 거리 비교하는 부분 ***
 

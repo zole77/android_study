@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     DatabaseHelper mDatabaseHelper;
-    private Button btnAdd, btnView, btnMap;
+    private Button btnAdd, btnView;
     private EditText editText;
 
     private static final int REQUEST_CODE_LOCATION_PERMISSIONS = 1;
@@ -34,34 +34,12 @@ public class MainActivity extends AppCompatActivity {
         editText = (EditText) findViewById(R.id.editText);
         btnAdd = (Button) findViewById(R.id.btnAdd);
         btnView = (Button) findViewById(R.id.btnView);
-        btnMap = (Button) findViewById(R.id.btnMap);
         mDatabaseHelper = new DatabaseHelper(this);
-
-//        btnAdd.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String newEntry = editText.getText().toString();
-//                if(editText.length() != 0){
-//                    AddData(newEntry);
-//                    editText.setText("");
-//                }else{
-//                    toast("내용이 없습니다. 채워넣어주세요.");
-//                }
-//            }
-//        });
 
         btnView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), ListDataActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        btnMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MapActivity.class);
                 startActivity(intent);
             }
         });
@@ -118,16 +96,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Location service stopped", Toast.LENGTH_LONG).show();
         }
     }
-
-//    public void AddData(String newEntry){
-//        mDatabaseHelper.addData(newEntry);
-//
-////        if(insertData){
-////            toast("데이터가 성공적으로 등록되었습니다.");
-////        }else{
-////            toast("이미 존재하는 데이터입니다.");
-////        }
-//    }
 
     private void toast(String message){
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();

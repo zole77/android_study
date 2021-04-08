@@ -56,28 +56,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     /*
+    1번쿼리
+    CREATE TABLE IF NOT EXISTS TABLE_NAME(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    latitude decimal(18,10) NOT NULL,
+    longitude decimal(18,10) NOT NULL,
+    PRIMARY KEY(id));
+
+    2번쿼리
     INSERT INTO TABLE_NAME (name) VALUES(item);
     */
     public void addData(LatLng Current){
         SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("CREATE TABLE IF NOT EXISTS '" + TABLE_NAME + "'(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, latitude decimal(18,10) NOT NULL, longitude decimal(18,10) NOT NULL)");
         db.execSQL("INSERT INTO '" + TABLE_NAME + "'(latitude, longitude) VALUES ("+Current.latitude+","+Current.longitude+")");
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put(COL2, item);
-//
-//        Log.d(TAG, "addData:Adding " + item + " to " + TABLE_NAME);
-//        long result = db.insert(TABLE_NAME, null, contentValues);
-//
-//        if(result == -1){
-//            return false;
-//        }else{
-//            return true;
-//        }
     }
 
-    public Cursor getData(){
+    public Cursor getTableName(){
         SQLiteDatabase db = this.getWritableDatabase();
-        //String query = "SELECT name FROM sqlite_master WHERE type='table';";
-        String query = "SELECT * FROM '" + TABLE_NAME + "';";
+        String query = "SELECT name FROM sqlite_master WHERE type='table';";
+        //String query = "SELECT * FROM '" + TABLE_NAME + "';";
+        Cursor data = db.rawQuery(query, null);
+        return data;
+    }
+
+    public Cursor getLocation(String table){
+        SQLiteDatabase db =this.getReadableDatabase();
+        String query = "SELECT * FROM '" + table + "';";
         Cursor data = db.rawQuery(query, null);
         return data;
     }
@@ -124,9 +129,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     DELETE FROM TABLE_NAME
     WHERE name = row_data
      */
-    public void deleteName(String row_data){
+    public void deleteName(String table){
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM '" + TABLE_NAME + "' WHERE name = '" + row_data +"';";
+        String query = "DROP TABLE '" + table + "';";
+        //String query = "DELETE FROM '" + TABLE_NAME + "' WHERE name = '" + row_data +"';";
         Log.d(TAG, "deleteName: query: " + query);
         db.execSQL(query);
     }

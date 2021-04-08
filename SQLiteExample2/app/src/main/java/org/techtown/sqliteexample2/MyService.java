@@ -109,18 +109,6 @@ public class MyService extends Service
         }
     }
 
-//    private Marker addMarker(Location location, String markerTitle, String markerSnippet){
-//        Marker marker1;
-//        MarkerOptions marker = new MarkerOptions();
-//        marker.position(new LatLng(location.getLatitude(), location.getLongitude()));
-//        marker.title(markerTitle);
-//        marker.snippet(markerSnippet);
-//        marker.draggable(true);
-//        marker1 = mMap.addMarker(marker);
-//
-//        return marker1;
-//    }
-
     public MyService() {
     }
 
@@ -203,20 +191,7 @@ public class MyService extends Service
                 }
             }
         }
-//
-//        createNotificationChannel();
-//
-//        Intent intent1 =new Intent(this, MainActivity.class);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent1, 0);
-//
-//        Notification notification = new NotificationCompat.Builder(this,"ChannelId1")
-//                .setContentTitle("My App tutorial")
-//                .setContentText("어플리케이션 실행중")
-//                .setSmallIcon(R.mipmap.ic_launcher)
-//                .setContentIntent(pendingIntent).build();
-//
-//
-//        startForeground(1,notification);
+
         return super.onStartCommand(intent, flags, startId);
     }
 
