@@ -10,8 +10,9 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import static org.techtown.foregroundservice.App.CHANNEL_ID;
+
 public class ExampleService extends Service {
-    public static final String CHANNEL_ID = "exampleServiceChannel";
 
     @Override
     public void onCreate() {
@@ -25,7 +26,7 @@ public class ExampleService extends Service {
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,notificationIntent,0);
 
-        Notification notification = new NotificationCompat.Builder(this,CHANNEL_ID)
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("Example Service")
                 .setContentText(input)
                 .setSmallIcon(R.drawable.ic_android_black_24dp)
@@ -41,7 +42,7 @@ public class ExampleService extends Service {
     public void onDestroy() {
         super.onDestroy();
     }
-
+    
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
