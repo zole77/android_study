@@ -32,9 +32,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -59,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference myRef = database.getReference();
 
 
-    String key = "pPaSpIZ%2BXFweoQb0rmHH5gguuqHRO00DHw7CgOuW9wZ2c5HDm%2BwqWpv%2B29V9NIHAcggmnJz3ztzM8206Hkkw7A%3D%3D";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void sendRequest() {
 
-        String url = "https://apixml-5d25d-default-rtdb.firebaseio.com/Msg.json";
+        String url = "";
 
         StringRequest request = new StringRequest(
                 Request.Method.GET,
@@ -135,41 +136,103 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(request);
     }
 
-    public void processResponse(String response) {
+    public void processResponse(String response){
 //        XmlToJson xmlToJson = new XmlToJson.Builder(response).build();
 //        Log.d("xmlToJson: ", xmlToJson.toJson().toString());
-        Log.d("firebasejson", response);
+        //Log.d("firebasejson", response);
         Gson gson = new Gson();
         Digest digestList = gson.fromJson(response, Digest.class);
         for(int i=0;i< digestList.DisasterMsg.row.size(); i++){
             row = digestList.DisasterMsg.row.get(i);
             String str = row.getMsg();
-            if(row.getLocation_name().equals("경기도 평택시") || row.getLocation_name().equals("부산광역시 전체")){
+            //if(row.getLocation_name().equals("부산광역시 전체")) {
+
                 Pattern pattern = Pattern.compile("[(](.*?)[)]");
                 Matcher matcher = pattern.matcher(str);
+//
+//                Pattern datepattern = Pattern.compile("[0-9]+\\.[0-9]{1,2}");
+//                Matcher datematcher = datepattern.matcher(str);
+//
+//                while(datematcher.find()){
+//                    String filter = datematcher.group();
+//                    Log.d("메세지: ", row.getMsg() );
+//                    Log.d(TAG, filter);
+//                }
 
                 while (matcher.find()) {  // 일치하는 게 있다면
                     //재난문자 ( ) 안 내용들 모두 들어옴
 
-                    if(matcher.group(1).length() > 2){
+                    if (matcher.group(1).length() > 2) {
+                        //Log.d(TAG, matcher.group());
                         //요일제외 2글자 이상인 재난문자 선별
                         Pattern pattern2 = Pattern.compile(".*?(길\\b|동\\b|대로\\b|로\\b).*");
                         Matcher matcher2 = pattern2.matcher(matcher.group(1));
-                        while(matcher2.find()){
+                        while (matcher2.find()) {
                             // ~길, ~동, ~대로 ~로 글자 전후로 가져옴
                             String filter = matcher2.group();
 
                             int target_index;
-                            if(filter.contains("소독완료")){
+                            if (filter.contains("소독완료")) {
                                 target_index = filter.indexOf("소독완료");
                                 filter = filter.replace(filter.substring(target_index), "");
 
-                            }else if(filter.contains("방역완료")){
+                            } else if (filter.contains("방역완료")) {
                                 target_index = filter.indexOf("방역완료");
                                 filter = filter.replace(filter.substring(target_index), "");
                             }
-                            filter = filter.replaceAll(".*감염경로.*","");
-                            Log.d(TAG, filter);
+                            filter = filter.replaceAll(".*감염경로.*", "");
+                            //Log.d(TAG, filter);
+                            Log.d(TAG, row.getMsg());
+                            Pattern datepattern = Pattern.compile("[0-9]+\\.[0-9]{1,2}|[0-9]\\월 +[0-9]{1,2}\\일|[0-9]\\월+[0-9]{1,2}\\일|[0-9]/[0-9]{1,2}");
+                            Matcher datematcher = datepattern.matcher(str);
+
+
+                            while (datematcher.find()) {
+                                int flag = 0;
+                                if(flag == 0){  // 날짜가 하나도 저장되어 있지 않으면
+                                    String datefilter = datematcher.group();
+                                    datefilter = datefilter.replaceAll("\\월|\\일|\\/", ".");
+                                    long time = System.currentTimeMillis();
+                                    SimpleDateFormat dayTime = new SimpleDateFormat("yyyy");
+                                    String now = dayTime.format(new Date(time));
+
+                                    SimpleDateFormat beforedayTime = new SimpleDateFormat("MM.dd");
+                                    SimpleDateFormat afterdayTime = new SimpleDateFormat(now + "년MM월dd일");
+                                    java.util.Date tempDate = null;
+                                    try{
+                                        tempDate = beforedayTime.parse(datefilter);
+                                    }catch(ParseException e){
+                                        e.printStackTrace();
+                                    }
+                                    String transDate = afterdayTime.format(tempDate);
+                                    Log.d("변환된 날짜: ", transDate);
+                                    // DB startDay 저장코드
+                                }
+                                if(flag >= 1){  // 이미 1개가 저장되어 있다면
+                                    String datefilter = datematcher.group();
+                                    datefilter = datefilter.replaceAll("\\월|\\일|\\/", ".");
+                                    long time = System.currentTimeMillis();
+                                    SimpleDateFormat dayTime = new SimpleDateFormat("yyyy");
+                                    String now = dayTime.format(new Date(time));
+
+                                    SimpleDateFormat beforedayTime = new SimpleDateFormat("MM.dd");
+                                    SimpleDateFormat afterdayTime = new SimpleDateFormat(now + "년MM월dd일");
+                                    java.util.Date tempDate = null;
+                                    try{
+                                        tempDate = beforedayTime.parse(datefilter);
+                                    }catch(ParseException e){
+                                        e.printStackTrace();
+                                    }
+                                    String transDate = afterdayTime.format(tempDate);
+                                    // DB endDay 저장코드
+                                    // DB (endDay - startDay) 저장코드
+                                }
+                                flag += 1;
+                            }
+
+                            // 날짜 변환이 끝나면
+
+
 
                             //                        if(filter.contains("소독완료") || filter.contains("방역완료") || filter.contains("감염경로")){
                             //                            filter = filter.replaceAll(".*소독완료.*", "");
@@ -177,11 +240,18 @@ public class MainActivity extends AppCompatActivity {
                             //filter = filter.replace("소독완료", "");
                         }
                     }
-                    if(matcher.group(1) ==  null)
+                    if (matcher.group(1) == null)
                         break;
                 }
                 disaterAdapter.addItem(row);
-            }
+
+
+
+            //}
+
+
+
+
 //            if(row.location_name.equals("부산광역시 사하구") || row.location_name.equals("부산광역시 전체")){
 //
 //                disaterAdapter.addItem(row);
