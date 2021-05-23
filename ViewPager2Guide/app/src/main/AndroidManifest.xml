@@ -9,8 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ViewPager2Guide">
-        <activity android:name=".MainActivity"/>
-        <activity android:name=".GuideActivity">
+        <activity android:name=".GuideActivity"/>
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
