@@ -1,0 +1,46 @@
+출처: https://velog.io/@eun3673/application-fundamentals-lifecycle
+
+프래그먼트 생명주기
+
+onAttach()
+- 액티비티에서 프래그먼트를 추가하면 호출된다.
+- 인자로 Context를 받아서 Listener interface를 implement하면 Context를 통해 가져올 수 있다.
+
+onCreate()
+- onAttach() 다음으로 호출되는 함수다.
+- 액티비티의 onCreate()와 역할이 비슷하다.
+- 단, UI에 관련된 작업은 할 수 없다. (View, ViewGroup, ui바인딩 등)
+- 하지만, UI 관련된 작업 외에, Int형 등등의 변수 초기화 작업은 가능하다.
+
+onCreateView()
+- onCreate() 다음으로 호출되는 함수다.
+- 지금부터는 프래그먼트에 속한 UI 관련된 작업을 할 수 있는 단계
+
+onActivityCreated()
+- onCreate() 다음으로 호출되는 함수다.
+- 프래그먼트가 backStack에서 돌아오면 호출되는 함수이기도 하다.
+
+onStart()
+- onActivityCreated() 다음으로 호출되는 함수다.
+- 액티비티와 마찬가지로 이 시점부터는 사용자가 액티비티를 볼 수 있다.
+
+onResume()
+- onStart() 다음으로 호출되는 함수다.
+- 액티비티와 마찬가지로 이 시점부터 프래그먼트가 실행중인 상태로 본다.
+
+onPause()
+- 프래그먼트의 호스트 액티비티가 포커스를 잃고 다른 액티비티가 최상단에서 보여지는 경우에 호출된다.
+- 1번과 같은 경우, 프래그먼트가 backStack으로 들어간다.
+
+onStop()
+- 프래그먼트의 호스트 액티비티가 포커스를 잃고 다른 액티비티가 최상단에서 보여지는 경우와 액티비티가 완전히 보이지 않는 경우에 호출된다.
+
+onDestroyView()
+- 프래그먼트가 구현된 뷰가 제거되는 단계다.
+- 이 메소드가 호출된 이후에 프래그먼트가 BackStack에서 돌아오면 onCreateView()가 호출된다.
+
+onDestroy()
+- 프래그먼트를 완전히 제거하기 직전이다.
+
+onDetach()
+- 프래그먼트가 제거되고, 액티비티로부터 해제될 때 호출된다.
