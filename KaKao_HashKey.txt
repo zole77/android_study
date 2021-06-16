@@ -1,0 +1,40 @@
+MainActivity
+    /**
+     * 카카오 로그인 시 필요한 해시키를 얻는 메소드.
+     */
+
+    private void getAppKeyHash(){
+        try{
+            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
+            for(Signature signature : info.signatures){
+                MessageDigest md;
+                md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                String something = new String(Base64.encode(md.digest(),0));
+                Log.e("Hash key", something);
+            }
+        }catch (Exception e){
+            Log.e("name not found", e.toString());
+        }
+    }
+
+
+build.gradle (Project)
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'http://devrepo.kakao.com:8088/nexus/content/groups/public/'}
+        jcenter() // Warning: this repository is going to shut down soon
+    }
+}
+
+build.gradle(Module)
+dependencies {
+
+    ...
+    // 카카오 로그인
+    implementation 'com.kakao.sdk:usermgmt:1.27.0'
+    
+    ...
+}
