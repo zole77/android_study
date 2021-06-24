@@ -1,5 +1,6 @@
 package org.techtown.kakaologinex;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         Session.getCurrentSession().addCallback(mSessionCallback);
         Session.getCurrentSession().checkAndImplicitOpen();
 
-        // getAppKeyHash();
+        //getAppKeyHash();
     }
 
     /**
@@ -85,5 +86,17 @@ public class MainActivity extends AppCompatActivity {
         }catch (Exception e){
             Log.e("name not found", e.toString());
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data))
+            super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Session.getCurrentSession().removeCallback(mSessionCallback);
     }
 }

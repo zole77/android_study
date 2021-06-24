@@ -4,10 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.LogoutResponseCallback;
 
 public class SubActivity extends AppCompatActivity {
 
@@ -35,5 +38,17 @@ public class SubActivity extends AppCompatActivity {
         // 프로필 이미지 사진 세팅
         Glide.with(this).load(strProfileImg).into(iv_profile);
 
+        findViewById(R.id.btn_logout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 로그아웃 시 실행하는 지점
+                UserManagement.getInstance().requestLogout(new LogoutResponseCallback() {
+                    @Override
+                    public void onCompleteLogout() {
+                        finish();
+                    }
+                });
+            }
+        });
     }
 }
